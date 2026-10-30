@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Угадай чё за мем | Telegram Web App</title>
+  
+  <!-- Telegram Web App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Стили -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Canvas для конфетти -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div id="app-container">
+    <!-- Верхняя панель -->
+    <header class="top-bar">
+      <div class="brand-badge" id="brand-badge">
+        <span>🗿</span> МЕМОЛОГИЯ 2026
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="icon-btn" id="sound-toggle-btn" title="Вкл/Выкл звук">
+          🔊
+        </button>
+        <button class="icon-btn" id="memopedia-nav-btn" title="Справочник мемов">
+          📖
+        </button>
+      </div>
+    </header>
+
+    <!-- 1. ПРИВЕТСТВЕННЫЙ ЭКРАН -->
+    <section class="screen active" id="screen-welcome">
+      <div class="welcome-hero">
+        <div class="logo-animation">
+          🗿
+        </div>
+        <h1 class="app-title">ЧЁ ЗА МЕМ?</h1>
+        <p class="app-subtitle">Все версии игры в одном месте: классика, угадывание по звуку, сбор букв и выживание!</p>
+      </div>
+
+      <!-- Статистика игрока -->
+      <div class="stats-card">
+        <div class="stat-item">
+          <span class="stat-value" id="stat-high-score">0</span>
+          <span class="stat-label">Рекорд</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="stat-games-played">0</span>
+          <span class="stat-label">Сыграно</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="stat-accuracy">0%</span>
+          <span class="stat-label">База</span>
+        </div>
+      </div>
+
+      <!-- Выбор всех версий/режимов игры -->
+      <div class="modes-container">
+        <!-- Режим 1: Викторина 4 варианта -->
+        <div class="mode-card" data-mode="classic" style="--mode-color: #8b5cf6;">
+          <div class="mode-icon">⚡</div>
+          <div class="mode-info">
+            <div class="mode-title">1. Классическая Викторина</div>
+            <div class="mode-desc">Стоп-кадр + 4 варианта ответа на скорость и комбо!</div>
+          </div>
+          <div class="mode-arrow">➜</div>
+        </div>
+
+        <!-- Режим 2: Звуковой раунд -->
+        <div class="mode-card" data-mode="audio" style="--mode-color: #ec4899;">
+          <div class="mode-icon">🔊</div>
+          <div class="mode-info">
+            <div class="mode-title">2. Угадай по Звуку</div>
+            <div class="mode-desc">Слушай культовый мемный звук/трек и угадывай источник!</div>
+          </div>
+          <div class="mode-arrow">➜</div>
+        </div>
+
+        <!-- Режим 3: Собери слово из букв -->
+        <div class="mode-card" data-mode="word" style="--mode-color: #06b6d4;">
+          <div class="mode-icon">🔤</div>
+          <div class="mode-info">
+            <div class="mode-title">3. Собери Название из Букв</div>
+            <div class="mode-desc">Головоломка: отгадай мем и собери его имя из рассыпанных букв!</div>
+          </div>
+          <div class="mode-arrow">➜</div>
+        </div>
+
+        <!-- Режим 4: Выживание Скуфа -->
+        <div class="mode-card" data-mode="survival" style="--mode-color: #ef4444;">
+          <div class="mode-icon">💀</div>
+          <div class="mode-info">
+            <div class="mode-title">4. Выживание Скуфа (3 жизни)</div>
+            <div class="mode-desc">Хардкор: играй, пока не сделаешь 3 ошибки подряд!</div>
+          </div>
+          <div class="mode-arrow">➜</div>
+        </div>
+
+        <!-- Режим 5: Мемный Микс -->
+        <div class="mode-card" data-mode="mix" style="--mode-color: #f59e0b;">
+          <div class="mode-icon">🌀</div>
+          <div class="mode-info">
+            <div class="mode-title">5. Мемный Микс (Всё вместе)</div>
+            <div class="mode-desc">Чередование викторины, звуков и букв в одной сумасшедшей сессии!</div>
+          </div>
+          <div class="mode-arrow">➜</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. ЭКРАН ИГРЫ (QUIZ) -->
+    <section class="screen" id="screen-quiz">
+      <div class="quiz-header">
+        <div class="quiz-top-info">
+          <div class="quiz-stats-group">
+            <span class="live-badge" id="quiz-lives">❤️ x3</span>
+            <span class="streak-badge" id="quiz-streak" style="display: none;">🔥 x2</span>
+          </div>
+          <div class="score-display">
+            <span id="quiz-score">0</span> <small style="font-size: 12px; color: var(--hint-color);">PTS</small>
+          </div>
+        </div>
+
+        <!-- Прогресс раундов -->
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progress-bar-fill"></div>
+        </div>
+
+        <!-- Таймер вопроса -->
+        <div class="timer-bar" id="timer-bar-wrapper">
+          <div class="timer-fill" id="timer-bar-fill"></div>
+        </div>
+      </div>
+
+      <!-- Карточка мема -->
+      <div class="meme-card" id="meme-card">
+        <div class="meme-badge-pill" id="meme-category-badge">БРЕЙНРОТ</div>
+        
+        <!-- Обычный визуал (SVG) -->
+        <div class="meme-visual-box" id="meme-visual-box">
+          <!-- SVG арт мема генерируется динамически -->
+        </div>
+
+        <!-- Специальная кнопка прослушивания звука для Звукового раунда -->
+        <div class="audio-round-box" id="audio-round-box" style="display: none;">
+          <button class="audio-play-big-btn" id="audio-play-big-btn">
+            <span class="audio-wave-icon">🔊</span>
+            <span class="audio-play-text">НАЖМИ, ЧТОБЫ ПОСЛУШАТЬ ЗВУК</span>
+          </button>
+        </div>
+
+        <div class="meme-caption" id="meme-caption">"Листинг уже завтра, пацаны!"</div>
+        <h2 class="meme-question-text" id="meme-question">Чё за мем на картинке?</h2>
+      </div>
+
+      <!-- 1. Варианты ответов (для викторины / звуков / выживания) -->
+      <div class="options-grid" id="options-grid">
+        <!-- 4 кнопки ответов формируются скриптом -->
+      </div>
+
+      <!-- 2. Панель сбора слова из букв (для словесного раунда) -->
+      <div class="word-puzzle-container" id="word-puzzle-container" style="display: none;">
+        <!-- Слоты для собранных букв слова -->
+        <div class="word-slots-wrapper" id="word-slots-wrapper">
+          <!-- <div class="letter-slot">Х</div> ... -->
+        </div>
+
+        <!-- Кнопки рассыпанных букв -->
+        <div class="letter-tiles-keyboard" id="letter-tiles-keyboard">
+          <!-- <button class="letter-tile">Х</button> ... -->
+        </div>
+
+        <!-- Кнопки управления словом -->
+        <div class="word-actions-row">
+          <button class="word-btn-secondary" id="word-backspace-btn">⌫ Стереть</button>
+          <button class="word-btn-secondary" id="word-clear-btn">Сброс</button>
+          <button class="word-btn-submit" id="word-submit-btn">Готово ➔</button>
+        </div>
+      </div>
+
+      <!-- Баннер обратной связи (правильно / ошибка) -->
+      <div class="feedback-box" id="feedback-box">
+        <div class="feedback-title" id="feedback-title">БАЗА 🗿</div>
+        <div class="feedback-fact" id="feedback-fact">...</div>
+        <div class="feedback-punchline" id="feedback-punchline">...</div>
+        <button class="main-action-btn" id="next-question-btn" style="margin-top: 10px;">
+          Дальше ➔
+        </button>
+      </div>
+    </section>
+
+    <!-- 3. ЭКРАН РЕЗУЛЬТАТОВ -->
+    <section class="screen" id="screen-result">
+      <div class="result-container">
+        <!-- Карточка ранга -->
+        <div class="rank-card" id="rank-card">
+          <div class="rank-badge" id="rank-badge">🗿 БАЗА</div>
+          <h2 class="rank-title" id="rank-title">Базированный Гигачад</h2>
+          <p class="rank-desc" id="rank-desc">Твой мозг на 90% состоит из мемов!</p>
+          <div class="rank-advice-box" id="rank-advice">Совет: продолжай выдавать базу.</div>
+        </div>
+
+        <!-- Статистика сессии -->
+        <div class="score-stats-grid">
+          <div class="score-stat-box">
+            <span class="stat-big" id="result-final-score">1850</span>
+            <span class="stat-sub">Очков набрано</span>
+          </div>
+          <div class="score-stat-box">
+            <span class="stat-big" id="result-correct-count">9 / 10</span>
+            <span class="stat-sub">Точность ответов</span>
+          </div>
+        </div>
+
+        <!-- Кнопки действий -->
+        <button class="main-action-btn" id="share-telegram-btn">
+          🚀 Поделиться в Telegram
+        </button>
+        <button class="main-action-btn btn-secondary" id="play-again-btn">
+          🔄 Выбрать другой режим
+        </button>
+        <button class="main-action-btn btn-secondary" id="open-memopedia-from-result">
+          📖 Открыть Мемопедию
+        </button>
+      </div>
+    </section>
+
+    <!-- 4. ЭКРАН МЕМОПЕДИИ (СПРАВОЧНИК МЕМОВ) -->
+    <section class="screen" id="screen-memopedia">
+      <div class="memopedia-header">
+        <h2 class="memopedia-title">Мемопедия 📜</h2>
+        <div class="memopedia-tabs">
+          <button class="tab-pill active" data-tab="all">Все (20+)</button>
+          <button class="tab-pill" data-tab="brainrot">Брейнрот 🤯</button>
+          <button class="tab-pill" data-tab="zoomer">Зумеры 💅</button>
+          <button class="tab-pill" data-tab="classic">Золотая классика 👴</button>
+        </div>
+      </div>
+
+      <div class="memes-list" id="memopedia-list">
+        <!-- Список мемов -->
+      </div>
+
+      <button class="main-action-btn btn-secondary" id="back-to-menu-btn" style="margin-top: auto; margin-bottom: 10px;">
+        ⬅ В главное меню
+      </button>
+    </section>
+  </div>
+
+  <!-- Скрипты данных и аудио -->
+  <script src="memes-data.js"></script>
+  <script src="audio.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

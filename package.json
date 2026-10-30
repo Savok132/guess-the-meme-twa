@@ -1,0 +1,27 @@
+{
+  "name": "guess-the-meme-twa",
+  "version": "1.0.0",
+  "description": "Telegram Web App игра 'Угадай чё за мем'",
+  "main": "server.js",
+  "scripts": {
+    "launch": "node launch.js",
+    "start": "node server.js",
+    "dev": "node server.js",
+    "bot:node": "node bot.js",
+    "bot:py": "python bot.py"
+  },
+  "keywords": [
+    "telegram",
+    "twa",
+    "web-app",
+    "telegram-mini-app",
+    "meme",
+    "game",
+    "quiz"
+  ],
+  "author": "Antigravity",
+  "license": "MIT",
+  "dependencies": {
+    "localtunnel": "^2.0.2"
+  }
+}
