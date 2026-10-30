@@ -2,7 +2,7 @@
 
 const https = require('https');
 
-const BOT_TOKEN = process.env.BOT_TOKEN || '9032470132:AAFD72TC9vO54SZL6rjR2XhA0qOfJp5oLNY';
+const BOT_TOKEN = process.env.BOT_TOKEN || 'YOUR_BOT_TOKEN_HERE';
 const WEB_APP_URL = process.env.WEB_APP_URL || 'https://savok132.github.io/guess-the-meme-twa/';
 const API_BASE = `https://api.telegram.org/bot${BOT_TOKEN}`;
 

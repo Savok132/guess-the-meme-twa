@@ -11,7 +11,7 @@ import urllib.request
 import urllib.error
 
 # Токен твоего бота @Mememoqizolog_bot
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "9032470132:AAFD72TC9vO54SZL6rjR2XhA0qOfJp5oLNY")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
 
 # URL твоей веб-страницы (должен быть с HTTPS для Telegram!)
 # Например: https://твой-логин.github.io/guess-the-meme-twa/ или https://xxxx.ngrok-free.app

@@ -7,7 +7,7 @@ const path = require('path');
 const https = require('https');
 const { spawn } = require('child_process');
 
-const BOT_TOKEN = process.env.BOT_TOKEN || '9032470132:AAFD72TC9vO54SZL6rjR2XhA0qOfJp5oLNY';
+const BOT_TOKEN = process.env.BOT_TOKEN || 'YOUR_BOT_TOKEN_HERE';
 const PORT = 3000;
 const PUBLIC_DIR = __dirname;
 const CLOUDFLARED_PATH = path.join(__dirname, 'bin', 'cloudflared.exe');
