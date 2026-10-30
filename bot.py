@@ -15,7 +15,7 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN", "9032470132:AAFD72TC9vO54SZL6rjR2XhA0qOf
 
 # URL твоей веб-страницы (должен быть с HTTPS для Telegram!)
 # Например: https://твой-логин.github.io/guess-the-meme-twa/ или https://xxxx.ngrok-free.app
-WEB_APP_URL = os.environ.get("WEB_APP_URL", "https://example.com")
+WEB_APP_URL = os.environ.get("WEB_APP_URL", "https://savok132.github.io/guess-the-meme-twa/")
 
 API_BASE = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
